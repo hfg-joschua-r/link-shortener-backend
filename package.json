@@ -15,5 +15,8 @@
   "bugs": {
     "url": "https://github.com/hfg-joschua-r/link-shortener-backend/issues"
   },
-  "homepage": "https://github.com/hfg-joschua-r/link-shortener-backend#readme"
+  "homepage": "https://github.com/hfg-joschua-r/link-shortener-backend#readme",
+  "dependencies": {
+    "node-emoji": "^1.10.0"
+  }
 }
