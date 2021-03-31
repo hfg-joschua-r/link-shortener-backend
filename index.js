@@ -1,5 +1,9 @@
-var emoji = require('node-emoji');
+var emoji = require('node-emoji')
 const fs = require("fs")
+const express = require('express')
+const app = express()
+const port = 3000
+
 const length = 3; //define length of our abbreviation 
 
 //function to generate random abbreviation based on url input
@@ -45,5 +49,14 @@ for (var i = 0; i < 1; i++) {
         console.log("Warning: File already exists");
     }
 }
+app.get('/code/:inputcode', (req, res) => {
+    console.log(req.params.inputcode);
+    if (fs.existsSync('./abbrevationTxt/' + req.params.inputcode + ".txt")) {
+       let data = fs.readFileSync('./abbrevationTxt/' + req.params.inputcode + ".txt");
+       res.send(data);
+    }
+  })
 
-console.log(duplicateCount);
+app.listen(port, () => {
+    console.log(`Example app listening at http://localhost:${port}`)
+  })

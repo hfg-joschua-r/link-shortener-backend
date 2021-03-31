@@ -17,6 +17,7 @@
   },
   "homepage": "https://github.com/hfg-joschua-r/link-shortener-backend#readme",
   "dependencies": {
+    "express": "^4.17.1",
     "node-emoji": "^1.10.0"
   }
 }
