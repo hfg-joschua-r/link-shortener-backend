@@ -41,7 +41,7 @@ for (var i = 0; i < 1; i++) {
     st.push(generatedAbbreviation);
     console.log(generatedAbbreviation);
     if (!fs.existsSync('./abbrevationTxt/' + generatedAbbreviation + ".txt"))
-        fs.writeFile('./abbrevationTxt/' + generatedAbbreviation + ".txt", generatedAbbreviation, () => {
+        fs.writeFile('./abbrevationTxt/' + generatedAbbreviation + ".txt", input, () => {
             //Callback - wird aufgerufen wenn die Datei erfolgreich geschrieben wurde
             console.log("Datei geschrieben!");
         });
@@ -52,11 +52,11 @@ for (var i = 0; i < 1; i++) {
 app.get('/code/:inputcode', (req, res) => {
     console.log(req.params.inputcode);
     if (fs.existsSync('./abbrevationTxt/' + req.params.inputcode + ".txt")) {
-       let data = fs.readFileSync('./abbrevationTxt/' + req.params.inputcode + ".txt");
-       res.send(data);
+        let data = fs.readFileSync('./abbrevationTxt/' + req.params.inputcode + ".txt");
+        res.send("this is the original link: " + data.toString());
     }
-  })
+})
 
 app.listen(port, () => {
     console.log(`Example app listening at http://localhost:${port}`)
-  })
+})
