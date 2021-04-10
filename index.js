@@ -1,10 +1,10 @@
-var emoji = require('node-emoji')
-const fs = require("fs")
-const express = require('express')
-const app = express()
-const port = 3000
+var emoji = require("node-emoji");
+const fs = require("fs").promises;
+const express = require("express");
+const app = express();
+const port = 3000;
 
-const length = 3; //define length of our abbreviation 
+const length = 3; //define length of our abbreviation
 
 //function to generate random abbreviation based on url input
 function shortenUrl(url) {
@@ -40,23 +40,25 @@ for (var i = 0; i < 1; i++) {
     }
     st.push(generatedAbbreviation);
     console.log(generatedAbbreviation);
-    if (!fs.existsSync('./abbrevationTxt/' + generatedAbbreviation + ".txt"))
-        fs.writeFile('./abbrevationTxt/' + generatedAbbreviation + ".txt", input, () => {
+    fs.writeFile(
+        "./abbrevationTxt/" + generatedAbbreviation + ".txt",
+        input,
+        () => {
             //Callback - wird aufgerufen wenn die Datei erfolgreich geschrieben wurde
             console.log("Datei geschrieben!");
-        });
-    else {
-        console.log("Warning: File already exists");
-    }
+        }
+    );
 }
-app.get('/code/:inputcode', (req, res) => {
-    console.log(req.params.inputcode);
-    if (fs.existsSync('./abbrevationTxt/' + req.params.inputcode + ".txt")) {
-        let data = fs.readFileSync('./abbrevationTxt/' + req.params.inputcode + ".txt");
-        res.send("this is the original link: " + data.toString());
-    }
-})
+app.get("/code/:inputcode", async(req, res) => {
+    let c = req.params.inputcode;
+    let data = await findURL(c);
+    res.status(200).send("this is the original link: " + data.toString());
+});
 
 app.listen(port, () => {
-    console.log(`Example app listening at http://localhost:${port}`)
-})
+    console.log(`Joschs app listening at http://localhost:${port}`);
+});
+
+async function findURL(code) {
+    return await fs.readFile("./abbrevationTxt/" + code + ".txt");
+}
