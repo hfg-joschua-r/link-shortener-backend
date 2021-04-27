@@ -1,24 +1,28 @@
 {
-  "name": "link-shortener-backend",
-  "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/hfg-joschua-r/link-shortener-backend.git"
-  },
-  "author": "",
-  "license": "ISC",
-  "bugs": {
-    "url": "https://github.com/hfg-joschua-r/link-shortener-backend/issues"
-  },
-  "homepage": "https://github.com/hfg-joschua-r/link-shortener-backend#readme",
-  "dependencies": {
-    "cors": "^2.8.5",
-    "express": "^4.17.1",
-    "node-emoji": "^1.10.0"
-  }
+    "name": "link-shortener-backend",
+    "version": "1.0.0",
+    "description": "",
+    "main": "index.js",
+    "scripts": {
+        "test": "echo \"Error: no test specified\" && exit 1"
+    },
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/hfg-joschua-r/link-shortener-backend.git"
+    },
+    "author": "",
+    "license": "ISC",
+    "bugs": {
+        "url": "https://github.com/hfg-joschua-r/link-shortener-backend/issues"
+    },
+    "homepage": "https://github.com/hfg-joschua-r/link-shortener-backend#readme",
+    "dependencies": {
+        "cors": "^2.8.5",
+        "express": "^4.17.1",
+        "node-emoji": "^1.10.0",
+        "url-exist": "^3.0.0",
+        "url-exists": "^1.0.3",
+        "url-exists-deep": "^2.0.10",
+        "valid-url": "^1.0.9"
+    }
 }
