@@ -2,7 +2,7 @@ const emoji = require("node-emoji");
 const fs = require("fs").promises;
 const express = require("express");
 const cors = require("cors");
-const validUrl = require("valid-url");
+const axios = require("axios");
 
 const app = express();
 const port = 3000;
@@ -29,12 +29,21 @@ async function saveGeneratedAbbrevation(shortened, url) {
 async function findURL(code) {
     return await fs.readFile("./abbrevationTxt/" + code + ".txt");
 }
+//checks if the uri is a valid URL 
 async function validateURL(uri) {
-    if (validUrl.isWebUri(uri)) {
-        console.log("Looks like an URI");
-        return true;
-    } else {
-        console.log("Not a URI");
+    //only send head request to get status code. 
+    const config = {
+        method: 'head',
+        timeout: 5000,
+        url: uri
+    };
+    try {
+        let res = await axios(config);
+        console.log(res.status);
+        if (res.status == 200)
+            return true;
+    } catch (error) {
+        console.log(error);
         return false;
     }
 }
@@ -68,5 +77,5 @@ app.post("/code/generate", async(req, res) => {
     }
 });
 app.listen(port, () => {
-    console.log(`Joschs app listening at http://localhost:${port}`);
+    console.log(`Joschs app listening at http: //localhost:${port}`);
 });
