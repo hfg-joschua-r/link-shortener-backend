@@ -1,10 +1,11 @@
 const emoji = require("node-emoji");
 const fs = require("fs").promises;
 const express = require("express");
-var cors = require('cors');
+const cors = require("cors");
+const validUrl = require("valid-url");
+
 const app = express();
 const port = 3000;
-
 const length = 3; //define length of our abbreviation
 
 //function to generate random abbreviation with random emojis
@@ -20,21 +21,26 @@ async function shortenUrl(url) {
 }
 //save our generated abbrevation to a txt file
 async function saveGeneratedAbbrevation(shortened, url) {
-    await fs.writeFile(
-        "./abbrevationTxt/" + shortened + ".txt",
-        url,
-        () => {
-            console.log("File written!");
-        }
-    );
+    await fs.writeFile("./abbrevationTxt/" + shortened + ".txt", url, () => {
+        console.log("File written!");
+    });
 }
 //find  url in txt files
 async function findURL(code) {
     return await fs.readFile("./abbrevationTxt/" + code + ".txt");
 }
+async function validateURL(uri) {
+    if (validUrl.isWebUri(uri)) {
+        console.log("Looks like an URI");
+        return true;
+    } else {
+        console.log("Not a URI");
+        return false;
+    }
+}
 app.use(express.json());
 app.use(cors());
-app.get('/', (req, res) => {
+app.get("/", (req, res) => {
     res.send("service is alive");
 });
 //endpoint to get the original url with the abbrevation
@@ -42,21 +48,24 @@ app.get("/code/:inputcode", async(req, res) => {
     let c = req.params.inputcode;
     try {
         await fs.access("./abbrevationTxt/" + c + ".txt");
-        console.log('file exists');
+        console.log("file exists");
         let data = await findURL(c);
         res.status(200).send("this is the original link: " + data.toString());
     } catch {
-        console.error('Kein Zugriff oder Datei existiert nicht');
+        console.error("Kein Zugriff oder Datei existiert nicht");
         res.status(404).send("couldn't find the link you're looking for");
     }
 });
 //endpoint to generate an abbrevation from the url
-app.post('/code/generate', async(req, res) => {
-    console.log(req.body.url);
-    //TODO: check if url is a valid url
-    //TODO: check if abbrevation already exists in DB
-    let short = await shortenUrl(req.body.url);
-    res.status(200).send({ url: short }).end();
+app.post("/code/generate", async(req, res) => {
+    let uri = req.body.url;
+    console.log(uri);
+    let short = await shortenUrl(uri);
+    if (await validateURL(uri)) {
+        res.status(200).send({ url: short }).end();
+    } else {
+        res.status(404).send("Given URL is not valid!").end();
+    }
 });
 app.listen(port, () => {
     console.log(`Joschs app listening at http://localhost:${port}`);
