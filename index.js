@@ -41,7 +41,7 @@ async function validateURL(uri) {
     //only send head request to get status code. 
     const config = {
         method: 'head',
-        timeout: 5000,
+        timeout: 3000,
         url: uri
     };
     try {
@@ -69,7 +69,7 @@ app.get("/code/:inputcode", async(req, res) => {
         await fs.access("./abbrevationTxt/" + c + ".txt");
         console.log("file exists");
         let data = await findURL(c);
-        res.status(200).send("this is the original link: " + data.toString());
+        res.status(200).send(data.toString());
     } catch {
         console.error("Kein Zugriff oder Datei existiert nicht");
         res.status(404).send("couldn't find the link you're looking for");
