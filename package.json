@@ -20,6 +20,8 @@
         "axios": "^0.21.1",
         "cors": "^2.8.5",
         "express": "^4.17.1",
+        "express-rate-limit": "^5.2.6",
+        "leaky-bucket": "^3.0.4",
         "node-emoji": "^1.10.0",
         "url-exist": "^3.0.0",
         "url-exists": "^1.0.3",

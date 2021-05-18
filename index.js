@@ -3,10 +3,17 @@ const fs = require("fs").promises;
 const express = require("express");
 const cors = require("cors");
 const axios = require("axios");
+const rateLimit = require("express-rate-limit");
 
 const app = express();
 const port = 3000;
 const length = 3; //define length of our abbreviation
+
+const apiLimiter = rateLimit({
+    windowMs: 15 * 60 * 1000, // 15 minutes
+    max: 100, // limit each IP to 100 requests per windowMs
+    message: "Maximum amount of API request used" //message send to users if they exceed the number of requests.
+  });
 
 //function to generate random abbreviation with random emojis
 async function shortenUrl(url) {
@@ -52,6 +59,9 @@ app.use(cors());
 app.get("/", (req, res) => {
     res.send("service is alive");
 });
+// only apply to requests that begin with /api/
+app.use("/code/generate", apiLimiter);
+
 //endpoint to get the original url with the abbrevation
 app.get("/code/:inputcode", async(req, res) => {
     let c = req.params.inputcode;
