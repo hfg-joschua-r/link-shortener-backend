@@ -38,13 +38,13 @@ async function shortenUrl() {
     return shortened;
 }
 //save our generated abbrevation in a Database
-async function saveGeneratedAbbrevationDB(shortened, url) {
+async function saveGeneratedAbbrevationDB(shortened, url, adminLink) {
     linksCollection.insertOne({
         "originalURL": url,
         "shortCode": shortened,
         "clickCounter": 0,
         "dateCreated": Date.now(),
-        "adminCode": "WorkInProgress"
+        "adminCode": adminLink
     });
 }
 //checks if the uri is a valid URL 
@@ -83,6 +83,9 @@ async function updateLinkClickCounter(linkID, oldClickCounter) {
 async function getDBentryByCode(code) {
     return await linksCollection.findOne({ shortCode: code });
 }
+async function getDBentryByAdminCode(code) {
+    return await linksCollection.findOne({ adminCode: code });
+}
 app.use(express.json());
 app.use(cors());
 app.get("/", (req, res) => {
@@ -119,17 +122,61 @@ app.get("/code/:inputcode", async(req, res) => {
 //endpoint to generate an abbrevation from the url
 app.post("/code/generate", async(req, res) => {
     let uri = req.body.url;
+    let adminLink = req.body.adminLink;
     console.log(uri);
     let short = await shortenUrl();
     //check if we have a reachable, valid url
     if (await validateURL(uri)) {
         //save the URL + ShortenedVersion in Our DB
-        await saveGeneratedAbbrevationDB(short, uri);
+        await saveGeneratedAbbrevationDB(short, uri, adminLink);
         res.status(200).send({ url: short }).end();
     } else {
         res.status(404).send("Given URL is not valid!").end();
     }
 });
+
+//endpoint to get matching db entry for given AdminCode
+app.get("/admin/:adminCode", async(req, res) => {
+    let adminLink = req.params.adminCode;
+    let dbEntry = await getDBentryByAdminCode(adminLink);
+    if (dbEntry !== null) {
+        res.status(200).send(dbEntry).end();
+    } else {
+        console.log(adminLink);
+        res.status(404).send("Given AdminLink is not valid!").end();
+    }
+});
+//endpoint to update an existing dbEntry
+app.post("/code/updateExisting", async(req, res) => {
+    let adminLink = req.body.adminLink;
+    let updatedURL = req.body.newURL;
+    let newURL = { $set: { 'originalURL': updatedURL } };
+    if (await validateURL(updatedURL)) {
+        linksCollection.updateOne({ 'adminCode': adminLink }, newURL, (err, result) => {
+            if (err) console.log("err");
+            else {
+                console.log("sucessfully updated DB originalURL");
+                res.status(200).send("Update was sucessful").end();
+            }
+        });
+    } else {
+        res.status(404).send("Given URL is not valid!").end();
+    }
+});
+//endpoint to delete an existing dbEntry
+app.post("/code/deleteExisting", async(req, res) => {
+    let adminLink = req.body.adminLink;
+    linksCollection.deleteOne({ 'adminCode': adminLink }, (err, result) => {
+        if (err) {
+            console.log("err");
+            res.status(404).send("Couldn't delete DBentry").end();
+        } else {
+            console.log("sucessfully deleted DB entry");
+            res.status(200).send("Update was sucessful").end();
+        }
+    });
+});
+
 app.listen(port, () => {
     console.log(`Joschs app listening at http://localhost:${port}`);
 });
