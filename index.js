@@ -176,7 +176,18 @@ app.post("/code/deleteExisting", async(req, res) => {
         }
     });
 });
-
+//endpoint to get all DB entries for the admin dashboard
+app.get("/adminDashboard/getAllEntries", async(req, res) => {
+    await linksCollection.find({}).toArray(function(err, result) {
+        if (err) {
+            res.status(500).send(err).end();
+        } else {
+            let temp = result._id;
+            console.log(ObjectId(temp).getTimestamp());
+            res.status(200).send(JSON.stringify(result)).end();
+        }
+    });
+});
 app.listen(port, () => {
     console.log(`Joschs app listening at http://localhost:${port}`);
 });
