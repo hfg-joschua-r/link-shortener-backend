@@ -14,6 +14,7 @@ const { ObjectId } = require("bson");
 const uri = "mongodb+srv://dbuser:5uVkSa6U6TK3WLuJ@getraenkelistedb.4hnwb.mongodb.net/linkshortener?retryWrites=true&w=majority";
 const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true });
 
+//setup ratelimiter to limit the API requests to 100 in 15 minutes
 const apiLimiter = rateLimit({
     windowMs: 15 * 60 * 1000, // 15 minutes
     max: 100, // limit each IP to 100 requests per windowMs
@@ -30,26 +31,27 @@ connectDB();
 
 //function to generate random abbreviation with random emojis
 async function shortenUrl() {
-    //format our string so it doesn't include https:// and .com
-    let shortened = ""; //create variable for our abbreviation
+    let shortened = ""; //create a variable to write the abbrevation to
+    //the length is set above (currently set to 3)
     for (let i = 0; i < length; i++) {
         shortened = shortened + emoji.random().emoji;
     }
     return shortened;
 }
-//save our generated abbrevation in a Database
-async function saveGeneratedAbbrevationDB(shortened, url, adminLink) {
+//save our generated abbrevation in the MongoDB Database
+async function saveGeneratedAbbrevationDB(shortened, url, adminLink, ipAdress) {
     linksCollection.insertOne({
         "originalURL": url,
         "shortCode": shortened,
         "clickCounter": 0,
         "dateCreated": Date.now(),
-        "adminCode": adminLink
+        "adminCode": adminLink,
+        "clientIpAdress": ipAdress
     });
 }
 //checks if the uri is a valid URL 
 async function validateURL(uri) {
-    //only send head request to get status code. 
+    //only send head request to get status code, to limit ressources needed 
     const config = {
         method: 'head',
         timeout: 3000,
@@ -67,9 +69,9 @@ async function validateURL(uri) {
 }
 //Function to update the Counter of each abbrevation and the times it has been viewed
 async function updateLinkClickCounter(linkID, oldClickCounter) {
+    //Add one to the clickCounter
     oldClickCounter++;
     let newClickVal = { $set: { clickCounter: oldClickCounter } };
-    console.log(newClickVal);
     //Search for the given ID in the Databse
     let o_id = new ObjectId(linkID);
     //update the entry with the new updated Click Value
@@ -80,9 +82,11 @@ async function updateLinkClickCounter(linkID, oldClickCounter) {
         }
     });
 }
+//function to get a link entry by its abbrevation
 async function getDBentryByCode(code) {
     return await linksCollection.findOne({ shortCode: code });
 }
+//function to get a link entry by its admin code
 async function getDBentryByAdminCode(code) {
     return await linksCollection.findOne({ adminCode: code });
 }
@@ -94,7 +98,7 @@ app.get("/", (req, res) => {
 // only apply to requests that begin with /code/
 app.use("/code/generate", apiLimiter);
 
-//test api endpoint
+//test api endpoint (will be removed in later process)
 app.get("/test", async(req, res) => {
     let data = await getDBentryByCode("abc");
     console.log(data);
@@ -123,12 +127,14 @@ app.get("/code/:inputcode", async(req, res) => {
 app.post("/code/generate", async(req, res) => {
     let uri = req.body.url;
     let adminLink = req.body.adminLink;
+    let clientIp = req.body.ipAddress;
     console.log(uri);
+    console.log(clientIp);
     let short = await shortenUrl();
     //check if we have a reachable, valid url
     if (await validateURL(uri)) {
         //save the URL + ShortenedVersion in Our DB
-        await saveGeneratedAbbrevationDB(short, uri, adminLink);
+        await saveGeneratedAbbrevationDB(short, uri, adminLink, clientIp);
         res.status(200).send({ url: short }).end();
     } else {
         res.status(404).send("Given URL is not valid!").end();
