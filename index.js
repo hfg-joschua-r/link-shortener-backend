@@ -7,6 +7,7 @@ let linksCollection;
 const app = express();
 const port = 3000;
 const length = 3; //define length of our abbreviation
+const path = require('path');
 
 //db connection 
 const MongoClient = require('mongodb').MongoClient;
@@ -70,8 +71,8 @@ async function validateURL(uri) {
 //Function to update the Counter of each abbrevation and the times it has been viewed
 async function updateLinkClickCounter(linkID, oldClickCounter) {
     //Add one to the clickCounter
-    oldClickCounter++;
-    let newClickVal = { $set: { clickCounter: oldClickCounter } };
+    let newClickCounter = oldClickCounter + 1;
+    let newClickVal = { $set: { clickCounter: newClickCounter } };
     //Search for the given ID in the Databse
     let o_id = new ObjectId(linkID);
     //update the entry with the new updated Click Value
@@ -194,6 +195,15 @@ app.get("/adminDashboard/getAllEntries", async(req, res) => {
         }
     });
 });
+//emoji endpoints
+/*__dirname = "./emojiPicker";
+
+app.get("/fgEmojiPicker.js", (req, res) => {
+    res.sendFile(path.join(__dirname, './emojiPicker/fgEmojiPicker.js'));
+});
+app.get("/full-emoji-list.json", (req, res) => {
+    res.sendFile(path.join(__dirname, './emojiPicker/full-emoji-list.json'));
+});
 app.listen(port, () => {
     console.log(`Joschs app listening at http://localhost:${port}`);
-});
+});*/
