@@ -139,6 +139,28 @@ app.post("/code/generate", async(req, res) => {
         res.status(404).send("Given URL is not valid!").end();
     }
 });
+app.post("/code/generateManual", async(req, res) => {
+    let uri = req.body.url;
+    let adminLink = req.body.adminLink;
+    let clientIp = req.body.ipAddress;
+    let abbrevation = req.body.abbrevation;
+    console.log(uri);
+    console.log(clientIp);
+    console.log(abbrevation);
+    //check if we have a reachable & valid url
+    if (await validateURL(uri)) {
+        //save the URL + Shortened version in the database
+        console.log("dbEntry: " + linksCollection.findOne({ shortCode: abbrevation }));
+        if (linksCollection.findOne({ shortCode: abbrevation }) != null) {
+            await saveGeneratedAbbrevationDB(abbrevation, uri, adminLink, clientIp);
+            res.status(200).send({ url: abbrevation }).end();
+        } else {
+            res.status(404).send("Given abbrevation is already used").end();
+        }
+    } else {
+        res.status(404).send("Given URL is not valid!").end();
+    }
+});
 
 //endpoint to get matching db entry for given AdminCode
 app.get("/admin/:adminCode", async(req, res) => {
@@ -202,6 +224,7 @@ app.get("/fgEmojiPicker.js", (req, res) => {
 app.get("/full-emoji-list.json", (req, res) => {
     res.sendFile(path.join(__dirname, './emojiPicker/full-emoji-list.json'));
 });
+*/
 app.listen(port, () => {
     console.log(`Joschs app listening at http://localhost:${port}`);
-});*/
+});

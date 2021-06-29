@@ -24,6 +24,7 @@
         "leaky-bucket": "^3.0.4",
         "mongodb": "^3.6.8",
         "node-emoji": "^1.10.0",
+        "nodemon": "^2.0.8",
         "url-exist": "^3.0.0",
         "url-exists": "^1.0.3",
         "url-exists-deep": "^2.0.10",
