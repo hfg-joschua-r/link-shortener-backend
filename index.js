@@ -106,8 +106,6 @@ app.get("/test", async(req, res) => {
     res.status(200).send(data).end();
 });
 
-
-
 //endpoint to get the original url with the abbrevation
 app.get("/code/:inputcode", async(req, res) => {
     let code = req.params.inputcode;
@@ -132,9 +130,9 @@ app.post("/code/generate", async(req, res) => {
     console.log(uri);
     console.log(clientIp);
     let short = await shortenUrl();
-    //check if we have a reachable, valid url
+    //check if we have a reachable & valid url
     if (await validateURL(uri)) {
-        //save the URL + ShortenedVersion in Our DB
+        //save the URL + Shortened version in the database
         await saveGeneratedAbbrevationDB(short, uri, adminLink, clientIp);
         res.status(200).send({ url: short }).end();
     } else {
@@ -153,7 +151,7 @@ app.get("/admin/:adminCode", async(req, res) => {
         res.status(404).send("Given AdminLink is not valid!").end();
     }
 });
-//endpoint to update an existing dbEntry
+//endpoint to update an existing dbEntry by adminLink
 app.post("/code/updateExisting", async(req, res) => {
     let adminLink = req.body.adminLink;
     let updatedURL = req.body.newURL;
@@ -170,7 +168,7 @@ app.post("/code/updateExisting", async(req, res) => {
         res.status(404).send("Given URL is not valid!").end();
     }
 });
-//endpoint to delete an existing dbEntry
+//endpoint to delete an existing dbEntry by adminLink 
 app.post("/code/deleteExisting", async(req, res) => {
     let adminLink = req.body.adminLink;
     linksCollection.deleteOne({ 'adminCode': adminLink }, (err, result) => {
