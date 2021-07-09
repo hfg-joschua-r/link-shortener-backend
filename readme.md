@@ -36,3 +36,5 @@
 - `getDBentryByCode(code)`: Diese Funktion sucht mithilfe des Kürzels nach dem passenden Eintrag in der Datenbank. Falls vorhanden gibt die Funktion den entsprechenden Eintrag als vollständiges Objekt zurück. 
 - `getDBentryByAdminCode(code)`: Findet den Datenbank-Eintrag mithilfe des admin-Kürzels und gibt diesen als Objekt zurück. 
 
+## Frontend 
+[Frontend Repo](https://github.com/hfg-joschua-r/link-shortener-frontend/tree/Abgabe/linkshortenerfrontend)
