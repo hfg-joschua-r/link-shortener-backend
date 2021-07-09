@@ -21,6 +21,7 @@
 
 - **GET'** */code/:"abkürzung"* -Original URL wird zurückgegeben, und die Aufrufanzahl ("click-counter") des Links wird um eins erhöht.
 - **POST** */code/generate* -Generiert Abkürzung und gibt diese zurück, wenn eine URL mitgegeben wird.
+- **POST** */code/generateManual* -Generiert Abkürzung mit bereits definierten Emojis, prüft ob dieser Eintrag in der Datenbank vorhanden ist und legt einen neuen Antrag an (falls noch nicht vorhanden selbstverständlich) 
 - **POST** */code/updateExisting* -Nimmt den AdminCode & eine neue URL entgegen. Bei richtigem AdminCode wird der zugehörige Eintrag in der Datenbank mit der neuen URL ergänzt.
 - **POST** */code/deleteExisting* -Nimmt den AdminCode entgegen. Bei korrektem AdminCode wird der zugehörige Eintrag in der Datenbank gelöscht.
 - **GET** */admin/:"adminCode"* -Gibt zugehörigen Datenbank Eintrag zurück.
