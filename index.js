@@ -209,8 +209,6 @@ app.get("/adminDashboard/getAllEntries", async(req, res) => {
         if (err) {
             res.status(500).send(err).end();
         } else {
-            let temp = result._id;
-            console.log(ObjectId(temp).getTimestamp());
             res.status(200).send(JSON.stringify(result)).end();
         }
     });
